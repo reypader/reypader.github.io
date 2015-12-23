@@ -1,7 +1,73 @@
----
-layout: page
----
-<div class="resume">
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>RMPader</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/font-mfizz.css">
+
+  <link rel="canonical" href="http://reypader.github.io/resume.html">
+  <link rel="alternate" type="application/rss+xml" title="RMPader"
+        href="http://reypader.github.io/feed.xml">
+</head>
+
+
+<body>
+<nav class="navbar navbar-default navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+              aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">RMPader</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+        <li><a href="/">Home</a></li>
+        
+        
+        <li class="active"><a href="/resume.html">My Resume</a></li>
+        
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+             aria-expanded="false">Categories <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <!--<li role="separator" class="divider"></li>-->
+            <li class="dropdown-header">Java</li>
+            <li><a href="/tag/java.html">Plain Java stuff</a></li>
+            <li><a href="/tag/spring.html">Spring Framework</a></li>
+          </ul>
+        </li>
+      </ul>
+      <!--<ul class="nav navbar-nav navbar-right">-->
+      <!--<li><a href="../navbar/">Default</a></li>-->
+      <!--<li><a href="../navbar-static-top/">Static top</a></li>-->
+      <!--<li class="active"><a href="./">Fixed top <span class="sr-only">(current)</span></a></li>-->
+      <!--</ul>-->
+    </div>
+  </div>
+</nav>
+<div class="container content-wrapper">
+  <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title"></h1>
+  </header>
+
+  <div class="post-content">
+    <div class="resume">
   <h1 style="background-color: #ddd; padding:15px">My Resume</h1>
 
 
@@ -19,12 +85,12 @@ layout: page
     </div>
     <ul class="list-inline social-media-list">
       <li>
-        <a href="https://github.com/{{ site.github_username }}"><i class="fa fa-github-square"></i> <span
-                class="username">{{ site.github_username }}</span></a>
+        <a href="https://github.com/reypader"><i class="fa fa-github-square"></i> <span
+                class="username">reypader</span></a>
       </li>
       <li>
-        <a href="https://ph.linkedin.com/in/{{ site.linkedin_username }}"><i class="fa fa-linkedin-square"></i> <span
-                class="username">{{ site.linkedin_username }}</span></a>
+        <a href="https://ph.linkedin.com/in/rmpader"><i class="fa fa-linkedin-square"></i> <span
+                class="username">rmpader</span></a>
       </li>
     </ul>
   </div>
@@ -34,46 +100,206 @@ layout: page
     <h4>Core competencies:</h4>
 
     <div class="row">
-      {% for skill in site.resume.skills.core%}
+      
       <div class="col-md-6">
 
         <div class="skill progress">
           <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="90" aria-valuemin="0"
-               aria-valuemax="{{skill.rate}}0"
-               style="width: {{skill.rate}}0%; background: #{{skill.color}}">
-            <i class="skill-icon {{skill.icon}}"></i> {{skill.name}}
+               aria-valuemax="90"
+               style="width: 90%; background: #fa7800">
+            <i class="skill-icon icon-java-bold"></i> Java
           </div>
         </div>
       </div>
-      {% endfor %}
+      
+      <div class="col-md-6">
+
+        <div class="skill progress">
+          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="90" aria-valuemin="0"
+               aria-valuemax="60"
+               style="width: 60%; background: #f05133">
+            <i class="skill-icon icon-git"></i> Git
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+
+        <div class="skill progress">
+          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="90" aria-valuemin="0"
+               aria-valuemax="80"
+               style="width: 80%; background: #6db33f">
+            <i class="skill-icon icon-spring"></i> Spring Framework
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+
+        <div class="skill progress">
+          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="90" aria-valuemin="0"
+               aria-valuemax="40"
+               style="width: 40%; background: #e6d24c">
+            <i class="skill-icon icon-javascript"></i> JavaScript (vanilla)
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+
+        <div class="skill progress">
+          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="90" aria-valuemin="0"
+               aria-valuemax="80"
+               style="width: 80%; background: #aa0954">
+            <i class="skill-icon icon-maven"></i> Maven
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+
+        <div class="skill progress">
+          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="90" aria-valuemin="0"
+               aria-valuemax="40"
+               style="width: 40%; background: #b63032">
+            <i class="skill-icon icon-angular"></i> AngularJS
+          </div>
+        </div>
+      </div>
+      
     </div>
     <h4>Other skills:</h4>
 
     <div class="row">
-      {% for skill in site.resume.skills.other%}
+      
       <div class="col-md-6">
-        {{skill.name}}
+        JUnit
 
         <div class="progress">
           <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="90" aria-valuemin="0"
-               aria-valuemax="{{skill.rate}}0"
-               style="width: {{skill.rate}}0%;">
+               aria-valuemax="70"
+               style="width: 70%;">
           </div>
         </div>
       </div>
-      {% endfor %}
+      
+      <div class="col-md-6">
+        Mockito
+
+        <div class="progress">
+          <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="90" aria-valuemin="0"
+               aria-valuemax="60"
+               style="width: 60%;">
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        JPA
+
+        <div class="progress">
+          <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="90" aria-valuemin="0"
+               aria-valuemax="50"
+               style="width: 50%;">
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        Google Guice
+
+        <div class="progress">
+          <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="90" aria-valuemin="0"
+               aria-valuemax="50"
+               style="width: 50%;">
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        Swagger
+
+        <div class="progress">
+          <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="90" aria-valuemin="0"
+               aria-valuemax="40"
+               style="width: 40%;">
+          </div>
+        </div>
+      </div>
+      
     </div>
     <h3>Roles</h3>
 
     <div class="row">
-      {% for role in site.resume.roles%}
+      
       <div class="col-md-6">
-        <h4>{{role.name}}
-          <small>({{role.duration-from}} to {{role.duration-to}})</small>
+        <h4>Associate Developer
+          <small>(June 2012 to September 2013)</small>
         </h4>
-        <div class="role-description">{{role.description}}</div>
+        <div class="role-description">Entry-level developer for an online financial company. Has been involved in developing solutions for a mobile financing system.</div>
       </div>
-      {% endfor %}
+      
+      <div class="col-md-6">
+        <h4>Mid-level Developer
+          <small>(October 2013 to January 2015)</small>
+        </h4>
+        <div class="role-description">Lead a 10-man team for the same online financial company. Has tackled solutions architecture and development as well as requirments gathering with the customer.</div>
+      </div>
+      
+      <div class="col-md-6">
+        <h4>Mid-level Developer & Team/Development Lead
+          <small>(February 2015 to present)</small>
+        </h4>
+        <div class="role-description">Took the lead on most of the project I've been involved in. Created solutions in the cloud for clients.</div>
+      </div>
+      
     </div>
   </div>
 </div>
+  </div>
+
+</article>
+
+</div>
+<hr/>
+<footer class="container">
+
+  <div class="row">
+    <div class="col-sm-4 col-xs-6">
+      RMPader<br/>
+      <a href="mailto:reynaldmpader@gmail.com">reynaldmpader@gmail.com</a>
+    </div>
+
+    <div class="col-sm-4 col-xs-6">
+      <ul class="social-media-list">
+        <li>
+          <a href="https://github.com/reypader"><i class="fa fa-github-square"></i> <span class="username">reypader</span></a>
+        </li>
+        <li>
+          <a href="https://ph.linkedin.com/in/rmpader"><i class="fa fa-linkedin-square"></i> <span class="username">rmpader</span></a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="col-sm-4 col-xs-12">
+      <p>This blog is by no means a source of "absolute truth". It's simply a guide to those who wants them. I hope that you find the contents of this site helpful and may the undying light of learning guide you.
+</p>
+    </div>
+  </div>
+
+
+</footer>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+        crossorigin="anonymous"></script>
+<script src="/js/toc.js"></script>
+<script type="text/javascript">
+  $(document).ready(function () {
+    $('#toc').toc({showSpeed: 0});
+  });
+</script>
+
+</body>
+
+</html>

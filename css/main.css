@@ -1,0 +1,235 @@
+a {
+  text-decoration: none; }
+  a:hover {
+    text-decoration: none; }
+
+.contact-list,
+.social-media-list {
+  list-style: none;
+  margin-left: 0; }
+
+.social-media-list i {
+  font-size: 24px; }
+
+.social-media-list i {
+  color: #333; }
+
+.post-meta time {
+  font-style: italic;
+  color: #aaa; }
+
+.content-wrapper {
+  line-height: 1.7;
+  color: #555;
+  font-size: 16px; }
+  .content-wrapper h1, .content-wrapper h2, .content-wrapper h3, .content-wrapper h4, .content-wrapper h5, .content-wrapper h6 {
+    font-weight: bolder; }
+
+hr {
+  margin-top: 50px;
+  border-top: 5px solid #ddd; }
+
+/* Resume */
+.resume .profile {
+  margin-left: auto;
+  margin-right: auto;
+  padding: 15px; }
+  .resume .profile img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto; }
+  .resume .profile .social-media-list {
+    margin-top: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 200px; }
+  .resume .profile h2 {
+    text-align: center; }
+  @media screen and (min-width: 768px) {
+    .resume .profile {
+      float: left;
+      margin-right: 30px; } }
+  .resume .profile #summary {
+    word-wrap: break-word;
+    text-align: justify;
+    font-size: 14px; }
+    @media screen and (min-width: 768px) {
+      .resume .profile #summary {
+        width: 250px; } }
+.resume .resume-content {
+  overflow: hidden; }
+.resume .skill-icon {
+  font-size: 24px; }
+.resume .skill .progress-bar, .resume .skill.progress {
+  height: 40px;
+  line-height: 40px;
+  font-size: 16px; }
+.resume .role-description {
+  text-align: justify; }
+
+#toc {
+  display: inline-block;
+  float: right;
+  margin-left: 30px;
+  max-width: 350px;
+  min-width: 350px; }
+  #toc h2 {
+    margin-top: 0; }
+
+.clickable-header {
+  cursor: pointer; }
+
+.back-to-top {
+  position: relative;
+  top: -50px;
+  display: inline;
+  color: #ddd;
+  margin-left: 5px;
+  cursor: pointer;
+  float: right;
+  font-size: 32px; }
+
+/**
+ * Syntax highlighting styles
+ */
+h1, h2, h3, h4, h5, h6,
+p, blockquote, pre,
+ul, ol, dl, figure,
+.highlight {
+  margin-bottom: 15px; }
+
+.highlight {
+  background: #fff;
+  color: #122; }
+  .highlighter-rouge .highlight {
+    background: #eef; }
+  .highlight .c {
+    color: #998;
+    font-style: italic; }
+  .highlight .err {
+    color: #a61717;
+    background-color: #e3d2d2; }
+  .highlight .k {
+    color: #008; }
+  .highlight .o {
+    color: #660; }
+  .highlight .cm {
+    color: #998;
+    font-style: italic; }
+  .highlight .cp {
+    color: #999;
+    font-weight: bold; }
+  .highlight .c1 {
+    color: #998;
+    font-style: italic; }
+  .highlight .cs {
+    color: #999;
+    font-weight: bold;
+    font-style: italic; }
+  .highlight .gd {
+    color: #000;
+    background-color: #fdd; }
+  .highlight .gd .x {
+    color: #000;
+    background-color: #faa; }
+  .highlight .ge {
+    font-style: italic; }
+  .highlight .gr {
+    color: #a00; }
+  .highlight .gh {
+    color: #999; }
+  .highlight .gi {
+    color: #000;
+    background-color: #dfd; }
+  .highlight .gi .x {
+    color: #000;
+    background-color: #afa; }
+  .highlight .go {
+    color: #888; }
+  .highlight .gp {
+    color: #555; }
+  .highlight .gs {
+    font-weight: bold; }
+  .highlight .gu {
+    color: #aaa; }
+  .highlight .gt {
+    color: #a00; }
+  .highlight .kc {
+    font-weight: bold; }
+  .highlight .kd {
+    color: #008; }
+  .highlight .kp {
+    font-weight: bold; }
+  .highlight .kr {
+    font-weight: bold; }
+  .highlight .kt {
+    color: #458;
+    font-weight: bold; }
+  .highlight .m {
+    color: #099; }
+  .highlight .s {
+    color: #080; }
+  .highlight .nb {
+    color: #0086B3; }
+  .highlight .nc {
+    color: #606; }
+  .highlight .no {
+    color: #008080; }
+  .highlight .ni {
+    color: #800080; }
+  .highlight .ne {
+    color: #606; }
+  .highlight .nf {
+    color: #606; }
+  .highlight .nn {
+    color: #555; }
+  .highlight .nt {
+    color: #000080; }
+  .highlight .nv {
+    color: #008080; }
+  .highlight .ow {
+    font-weight: bold; }
+  .highlight .w {
+    color: #bbb; }
+  .highlight .mf {
+    color: #099; }
+  .highlight .mh {
+    color: #099; }
+  .highlight .mi {
+    color: #099; }
+  .highlight .mo {
+    color: #099; }
+  .highlight .sb {
+    color: #d14; }
+  .highlight .sc {
+    color: #d14; }
+  .highlight .sd {
+    color: #d14; }
+  .highlight .s2 {
+    color: #d14; }
+  .highlight .se {
+    color: #d14; }
+  .highlight .sh {
+    color: #d14; }
+  .highlight .si {
+    color: #d14; }
+  .highlight .sx {
+    color: #d14; }
+  .highlight .sr {
+    color: #009926; }
+  .highlight .s1 {
+    color: #d14; }
+  .highlight .ss {
+    color: #990073; }
+  .highlight .bp {
+    color: #999; }
+  .highlight .vc {
+    color: #008080; }
+  .highlight .vg {
+    color: #008080; }
+  .highlight .vi {
+    color: #008080; }
+  .highlight .il {
+    color: #099; }
+  .highlight .nd {
+    color: #066; }

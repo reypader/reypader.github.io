@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>How to: Declare more complex request mappings in Spring</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/font-mfizz.css">
+
+  <link rel="canonical" href="http://reypader.github.io/2015/12/21/spring-request-mapping.html">
+  <link rel="alternate" type="application/rss+xml" title="RMPader"
+        href="http://reypader.github.io/feed.xml">
+</head>
+
+
+<body>
+<nav class="navbar navbar-default navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+              aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">RMPader</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+        <li><a href="/">Home</a></li>
+        
+        
+        <li><a href="/resume.html">My Resume</a></li>
+        
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+             aria-expanded="false">Categories <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <!--<li role="separator" class="divider"></li>-->
+            <li class="dropdown-header">Java</li>
+            <li><a href="/tag/java.html">Plain Java stuff</a></li>
+            <li><a href="/tag/spring.html">Spring Framework</a></li>
+          </ul>
+        </li>
+      </ul>
+      <!--<ul class="nav navbar-nav navbar-right">-->
+      <!--<li><a href="../navbar/">Default</a></li>-->
+      <!--<li><a href="../navbar-static-top/">Static top</a></li>-->
+      <!--<li class="active"><a href="./">Fixed top <span class="sr-only">(current)</span></a></li>-->
+      <!--</ul>-->
+    </div>
+  </div>
+</nav>
+<div class="container content-wrapper">
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">How to: Declare more complex request mappings in Spring</h1>
+
+    <p class="post-meta">
+      <time datetime="2015-12-21T18:53:00+08:00" itemprop="datePublished">
+        Dec 21, 2015
+      </time>
+      &nbsp;
+      &nbsp;
+      
+    </p>
+  </header>
+  <div class="post-content" itemprop="articleBody">
+    <div id="toc" class="well"> DERP <br> Don't mind me</div>
+
+    <p>There&#39;s a lot of how-to&#39;s out there that could teach you how to create a REST API server with <a href="http://projects.spring.io/spring-boot/">Spring Boot</a>. Actually, spring already has a pretty good <a href="https://spring.io/guides/gs/rest-service/">example</a>. However, most of those found out there are pretty simplistic - the usual &quot;Hello World&quot; application. Of course, if that already showed you what you wanted, you wouldn&#39;t still be looking and stumble upon my humble blog. So, I would show you instead how to make a REST API with <em>the common stuff and use cases</em> that I think you&#39;re probably looking for.</p>
+
+<p><br>
+<strong>NOTE: All of the methods shown here assume that they are declared within the following controller:</strong></p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RestController</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;/sample&quot;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SampleController</span> <span class="o">{</span>
+    <span class="o">...</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>You can find the source code <a href="">here</a></p>
+
+<p><br>
+Here we go...</p>
+
+<hr>
+
+<h2 id="the-basics">The Basics</h2>
+
+<p>Before I show you how to do the more complex request mappings, I&#39;d like to refresh your memory a bit by showing you the most basic way of declaring request handlers in your controller.</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">sampleGet</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="s">&quot;This is the &#39;/sample&#39; handler for GET requests&quot;</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">samplePost</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="s">&quot;This is the &#39;/sample&#39; handler for POST requests&quot;</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>Notice that these mappings do not declare their own <code>value</code>, which means that they will match the same URL as the containing class. In this case, it would be &quot;/sample&quot;.</p>
+
+<hr>
+
+<h2 id="handling-query-params">Handling Query Params</h2>
+
+<p>One of the most usual case for handling requests are consuming query parameters. For those of you that might call it differently, query parameters are the ones that come after the question mark (<code>?</code>) in the URL. For example, in the URL <code>http://localhost:8080?foo=bar&amp;cat=meow</code>, the query parameters are <code>foo</code> and <code>cat</code> with values <code>bar</code> and <code>meow</code>, respectively.</p>
+
+<p>In the snippet below, the query parameters are automatically parsed into a <code>Map</code> object. From what I know, older versions of Spring does not have this transformation.</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;/get-with-params&quot;</span><span class="o">,</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">sampleQueryParam</span><span class="o">(</span><span class="nd">@RequestParam</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">params</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="s">&quot;You&#39;ve hit the &#39;/sample/get-with-params&#39; request handler with the following query params:\n&quot;</span> <span class="o">+</span> <span class="n">params</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>There are times when you simply want to do different logic based on certain parameters. For example, if the user passes a query param <code>foo=bar</code> you will create a new database record, otherwise you will do some other logic.</p>
+
+<p>You can do this by placing an <code>if-else</code> block in your handler or in your service but that could lead to some cluttering. Spring has an option that could help you separate your business logic better by allowing you to declare a separate handler when <code>foo</code> is <code>bar</code>. See the snippet below.</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;/get&quot;</span><span class="o">,</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">,</span>
+                <span class="n">params</span> <span class="o">=</span> <span class="s">&quot;foo=bar&quot;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">sampleForFooBar</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="s">&quot;You&#39;ve hit the &#39;/sample/get&#39; request handler where foo MUST be bar&quot;</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>With this in place, whenever the query parameters contain the key <code>foo</code> and its value is <code>baz</code>, the <code>sampleForFooBar()</code> will be the one to handle the request.</p>
+
+<p>Be careful, though. Spring executes request handlers that match the same request based on the &quot;best&quot; match which <em>may</em> be the same as the &quot;more strict&quot; match. Consider the two request handlers below.</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;/get&quot;</span><span class="o">,</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">unreachable</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="s">&quot;You will never hit this request handler. Why? Because sampleForFooNotBar() has a more strict &#39;criteria&#39;. See RequestMappingInfo.compareTo()&quot;</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;/get&quot;</span><span class="o">,</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">,</span>
+                <span class="n">params</span> <span class="o">=</span> <span class="s">&quot;foo!=bar&quot;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">sampleForFooNotBar</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="s">&quot;You&#39;ve hit the &#39;/sample/get&#39; request handler where foo should not be bar&quot;</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>The second method declares that it would handle any <code>GET</code> request to <code>/get</code> where <code>foo</code> is not assigned to <code>bar</code>. The first method on the other hand simply matches any <code>GET</code> request to <code>/get</code>. The problem will come to light once you try doing a <code>GET</code> to <code>/get</code> without any query parameters. You may expect that the method <code>unreachable()</code> will be executed but you&#39;ll be surprised that it does not. The method <code>sampleForFooNotBar()</code> was matched simply because <code>foo</code> is technically <code>null</code> which is, logically, not <code>bar</code>.</p>
+
+<hr>
+
+<h2 id="handling-path-variables">Handling Path Variables</h2>
+
+<p>There are times when you&#39;d prefer to have some values embedded into the URL itself and not use query parameters. These embedded values are called &quot;path variables&quot;. Including path variables into your request handler is pretty straight forward.</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;/get/{var}&quot;</span><span class="o">,</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">samplePathVariable</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">&quot;var&quot;</span><span class="o">)</span> <span class="n">String</span> <span class="n">var</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="s">&quot;You&#39;ve hit the &#39;/sample/get/{var}&#39; request handler with var=&quot;</span> <span class="o">+</span> <span class="n">var</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div>
+<hr>
+
+<h2 id="receiving-the-request-body-payload">Receiving the Request Body / Payload</h2>
+
+<p>Have you ever been in the situation where you&#39;ve declared an object parameter in the request handler and expected Spring to deserialize the payload correctly - but it always ends up <code>null</code>?</p>
+
+<p>You&#39;ve probably forgotten to add the <code>@RequestBody</code> annotation.</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;/post-with-body&quot;</span><span class="o">,</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">samplePostBody</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="n">PostRequest</span> <span class="n">request</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">JsonProcessingException</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="s">&quot;You&#39;ve hit the &#39;/sample/post-with-body&#39; request handler with the following body:\n&quot;</span>
+                <span class="o">+</span> <span class="n">objectMapper</span><span class="o">.</span><span class="na">writeValueAsString</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>Without going into too much details, <code>@RequestBody</code> tells Spring that the body of the request payload/body should be mapped to the annotated parameter. This is important because you can mix and match various parameter types that have been shown in previous sections.</p>
+
+<hr>
+
+<h2 id="responding-with-a-json-object">Responding with a (JSON) Object</h2>
+
+<p>So far, we have only been responding with Strings. Of course, this is not the common use-case. Usually, you&#39;d want to respond with a complex JSON or XML object. Strictly speaking, you have to annotate the method or class with <code>@ResponseBody</code> to declare an object response. However, since this is such a common annotation, you can make do without it. See the snippet below.</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;/post-with-body&quot;</span><span class="o">,</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">,</span>
+                <span class="n">params</span> <span class="o">=</span> <span class="s">&quot;json=true&quot;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">SampleResource</span> <span class="nf">sampleJsonResponse</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="n">PostRequest</span> <span class="n">request</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">JsonProcessingException</span> <span class="o">{</span>
+    <span class="n">SampleResource</span> <span class="n">resource</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">SampleResource</span><span class="o">();</span>
+    <span class="n">resource</span><span class="o">.</span><span class="na">setMessage</span><span class="o">(</span><span class="n">samplePostBody</span><span class="o">(</span><span class="n">request</span><span class="o">));</span>
+    <span class="k">return</span> <span class="n">resource</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div>
+<hr>
+
+<h2 id="file-uploads">File Uploads</h2>
+
+<p>File uploads in Spring are pretty straightforward. You simply declare a parameter of the type <code>MultipartFile</code> and annotate it with <code>@RequestParam</code> so that Spring knows where to read the data from.</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;/upload&quot;</span><span class="o">,</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">handleFileUpload</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="s">&quot;file&quot;</span><span class="o">)</span> <span class="n">MultipartFile</span> <span class="n">file</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="n">feile</span><span class="o">.</span><span class="na">getBytes</span><span class="o">();</span>
+    <span class="k">return</span> <span class="s">&quot;Contents: \n\n&quot;</span> <span class="o">+</span> <span class="k">new</span> <span class="nf">String</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>One important thing to note here is that this creates a temporary file in the system and the reads from that. This is done for large file uploads where keeping them in memory is not a cost-effective option. However, there are times when you&#39;re not allowed to write to the file system such as when you&#39;re deploying to <a href="https://cloud.google.com/appengine/docs/java/">Google App Engine</a>. </p>
+
+<p>To work around this, you must simply create a bean of the type <code>org.springframework.web.multipart.commons.CommonsMultipartResolver</code> and set the <code>maxInMemorySize</code> property to an appropriate value.</p>
+
+<hr>
+
+<h2 id="handling-different-content-types">Handling Different Content Types</h2>
+
+<p>We&#39;ve covered a lot of variations in handling requests. I&#39;d dare say that these are the most common types that you will encounter in your development. However, there are rare cases when you want to handle request differently simply based on the <code>content-type</code> of the request. Doing so is as simple as declaring the <code>consumes</code> parameter in the <code>@RequestMapping</code> annotation.</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;/post-strict&quot;</span><span class="o">,</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">,</span>
+                <span class="n">consumes</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON_VALUE</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">sampleStrictJson</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="n">PostRequest</span> <span class="n">request</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">JsonProcessingException</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="s">&quot;You&#39;ve hit the &#39;/sample/post-strict&#39; request handler for &#39;application/json&#39; with the following body:\n&quot;</span>
+                <span class="o">+</span> <span class="n">objectMapper</span><span class="o">.</span><span class="na">writeValueAsString</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;/post-strict&quot;</span><span class="o">,</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">,</span>
+                <span class="n">consumes</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_XML_VALUE</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">sampleStrictXml</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="n">PostXMLRequest</span> <span class="n">request</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">JsonProcessingException</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="s">&quot;You&#39;ve hit the &#39;/sample/post-strict&#39; request handler for &#39;application/xml&#39; with the following body (in JSON):\n&quot;</span>
+                <span class="o">+</span> <span class="n">objectMapper</span><span class="o">.</span><span class="na">writeValueAsString</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div>
+<hr>
+
+<h2 id="adding-translatable-exceptions">Adding Translatable Exceptions</h2>
+
+<p>You wouldn&#39;t want the raw exception stacktrace being returned to the clients. In previous versions of Spring you can present exceptions in a more presentable manner by catching all exceptions and constructing a <code>ResponseEntity</code> return type with its status and body set to appropriate values. Since Spring 3, we can annotate exceptions with <code>@ResponseStatus</code> to give Spring an idea on how to present this to the client. You can then throw this annotated exception as-is.</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ResponseStatus</span><span class="o">(</span><span class="n">code</span> <span class="o">=</span> <span class="n">HttpStatus</span><span class="o">.</span><span class="na">EXPECTATION_FAILED</span><span class="o">,</span>
+                <span class="n">reason</span> <span class="o">=</span> <span class="s">&quot;A sample annotated exception.&quot;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SampleTranslatedException</span> <span class="kd">extends</span> <span class="n">RuntimeException</span> <span class="o">{</span>
+
+<span class="o">}</span>
+</code></pre></div>
+<p>The downside to this is that the description is static. If you&#39;d want a dynamic error description, you should try...</p>
+
+<hr>
+
+<h2 id="writing-an-exception-handler">Writing an Exception Handler</h2>
+
+<p>Setting up your own exception handler is ideal for those cases when you want to assign different descriptions depending on certain parameters. Another benefit to this is that you can do additional tasks such as audit logging, error dumping, or calling other services when an exception is raised.</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ExceptionHandler</span><span class="o">({</span><span class="n">JsonProcessingException</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">IOException</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="kd">public</span> <span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResource</span><span class="o">&gt;</span> <span class="nf">handleAllExceptions</span><span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">ErrorResource</span> <span class="n">errorResource</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ErrorResource</span><span class="o">();</span>
+    <span class="n">errorResource</span><span class="o">.</span><span class="na">setMessage</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+
+    <span class="k">return</span> <span class="n">ResponseEntity</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">HttpStatus</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">)</span>
+                         <span class="o">.</span><span class="na">body</span><span class="o">(</span><span class="n">errorResource</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div>
+<hr>
+
+<h2 id="other-notes">Other notes</h2>
+
+<p>If you&#39;re not using Spring Boot (which packages a lot of dependencies for you), you might have problems trying to receive or respond JSON objects. If that&#39;s the case, you might be missing the following dependency:</p>
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.fasterxml.jackson.core<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>jackson-databind<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>
+<hr>
+
+<p>That concludes this article. Hopefully, you&#39;ve found the information I&#39;ve presented here useful to your REST API development. If you have questions, feel free to <a href="https://github.com/reypader/reypader.github.io/issues/new?title=How%20to:%20Declare%20more%20complex%20request%20mappings%20in%20Spring">comment/file an issue</a> or if you feel like reading, I suggest you read the <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/">Core Spring Framework documentation</a> or the <a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/">Spring Boot Documentation</a>.</p>
+
+<p><em>Cheers!</em><br>
+Rey</p>
+
+  </div>
+
+</article>
+</div>
+<hr/>
+<footer class="container">
+
+  <div class="row">
+    <div class="col-sm-4 col-xs-6">
+      RMPader<br/>
+      <a href="mailto:reynaldmpader@gmail.com">reynaldmpader@gmail.com</a>
+    </div>
+
+    <div class="col-sm-4 col-xs-6">
+      <ul class="social-media-list">
+        <li>
+          <a href="https://github.com/reypader"><i class="fa fa-github-square"></i> <span class="username">reypader</span></a>
+        </li>
+        <li>
+          <a href="https://ph.linkedin.com/in/rmpader"><i class="fa fa-linkedin-square"></i> <span class="username">rmpader</span></a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="col-sm-4 col-xs-12">
+      <p>This blog is by no means a source of "absolute truth". It's simply a guide to those who wants them. I hope that you find the contents of this site helpful and may the undying light of learning guide you.
+</p>
+    </div>
+  </div>
+
+
+</footer>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+        crossorigin="anonymous"></script>
+<script src="/js/toc.js"></script>
+<script type="text/javascript">
+  $(document).ready(function () {
+    $('#toc').toc({showSpeed: 0});
+  });
+</script>
+
+</body>
+
+</html>
