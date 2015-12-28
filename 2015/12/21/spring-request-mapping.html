@@ -38,7 +38,7 @@
         <li><a href="/">Home</a></li>
         
         
-        <li><a href="/resume.html">My Resume</a></li>
+        <li><a href="/me">My Resume</a></li>
         
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
@@ -67,7 +67,9 @@
 
     <p class="post-meta">
       <time datetime="2015-12-21T18:53:00+08:00" itemprop="datePublished">
-        Dec 21, 2015
+        
+        Edited: Dec 26, 2015
+        
       </time>
       &nbsp;
       &nbsp;
@@ -185,10 +187,10 @@ Here we go...</p>
 <div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;/post-with-body&quot;</span><span class="o">,</span>
                 <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">,</span>
                 <span class="n">params</span> <span class="o">=</span> <span class="s">&quot;json=true&quot;</span><span class="o">)</span>
-<span class="kd">public</span> <span class="n">SampleResource</span> <span class="nf">sampleJsonResponse</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="n">PostRequest</span> <span class="n">request</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">JsonProcessingException</span> <span class="o">{</span>
-    <span class="n">SampleResource</span> <span class="n">resource</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">SampleResource</span><span class="o">();</span>
-    <span class="n">resource</span><span class="o">.</span><span class="na">setMessage</span><span class="o">(</span><span class="n">samplePostBody</span><span class="o">(</span><span class="n">request</span><span class="o">));</span>
-    <span class="k">return</span> <span class="n">resource</span><span class="o">;</span>
+<span class="kd">public</span> <span class="n">SampleResponse</span> <span class="nf">sampleJsonResponse</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="n">PostRequest</span> <span class="n">request</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">JsonProcessingException</span> <span class="o">{</span>
+    <span class="n">SampleResponse</span> <span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">SampleResponse</span><span class="o">();</span>
+    <span class="n">response</span><span class="o">.</span><span class="na">setMessage</span><span class="o">(</span><span class="n">samplePostBody</span><span class="o">(</span><span class="n">request</span><span class="o">));</span>
+    <span class="k">return</span> <span class="n">response</span><span class="o">;</span>
 <span class="o">}</span>
 </code></pre></div>
 <hr>
@@ -247,12 +249,12 @@ Here we go...</p>
 
 <p>Setting up your own exception handler is ideal for those cases when you want to assign different descriptions depending on certain parameters. Another benefit to this is that you can do additional tasks such as audit logging, error dumping, or calling other services when an exception is raised.</p>
 <div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ExceptionHandler</span><span class="o">({</span><span class="n">JsonProcessingException</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">IOException</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
-<span class="kd">public</span> <span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResource</span><span class="o">&gt;</span> <span class="nf">handleAllExceptions</span><span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">ErrorResource</span> <span class="n">errorResource</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ErrorResource</span><span class="o">();</span>
-    <span class="n">errorResource</span><span class="o">.</span><span class="na">setMessage</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+<span class="kd">public</span> <span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span> <span class="nf">handleAllExceptions</span><span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">ErrorResponse</span> <span class="n">errorResponse</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ErrorResponse</span><span class="o">();</span>
+    <span class="n">errorResponse</span><span class="o">.</span><span class="na">setMessage</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
 
     <span class="k">return</span> <span class="n">ResponseEntity</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">HttpStatus</span><span class="o">.</span><span class="na">BAD_REQUEST</span><span class="o">)</span>
-                         <span class="o">.</span><span class="na">body</span><span class="o">(</span><span class="n">errorResource</span><span class="o">);</span>
+                         <span class="o">.</span><span class="na">body</span><span class="o">(</span><span class="n">errorResponse</span><span class="o">);</span>
 <span class="o">}</span>
 </code></pre></div>
 <hr>
