@@ -1,4 +1,4 @@
-reypader.github.io-wip
+reypader.github.io
 -------
 
-WIP repository for generating the static files used in [reypader.github.io](http://reypader.github.io/)
+WIP repository can be found [here](https://github.com/reypader/reypader.github.io-wip)
