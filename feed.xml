@@ -6,8 +6,8 @@
 </description>
     <link>http://reypader.github.io/</link>
     <atom:link href="http://reypader.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 28 Dec 2015 14:16:30 +0800</pubDate>
-    <lastBuildDate>Mon, 28 Dec 2015 14:16:30 +0800</lastBuildDate>
+    <pubDate>Mon, 28 Dec 2015 14:20:56 +0800</pubDate>
+    <lastBuildDate>Mon, 28 Dec 2015 14:20:56 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -216,43 +216,6 @@ Rey&lt;/p&gt;
         <category>spring</category>
         
         <category>spring-rest</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>How to: Create a non-Spring-Boot application</title>
-        <description>&lt;p&gt;Have you ever wanted to know how to configure your own REST application for a web container using annotation-based configurations?
-Have you ever wept in despair as you noticed that all of the tutorials you find with annotation-based configuration use Spring Boot without a &lt;code&gt;web.xml&lt;/code&gt; file?
-And if you did find one with a &lt;code&gt;web.xml&lt;/code&gt; file, I&amp;#39;m pretty sure that it used XML-based configuration.&lt;/p&gt;
-
-&lt;p&gt;Well, hopefully, this article can help you with that. This is a short article that would show you how to configure the &lt;code&gt;web.xml&lt;/code&gt; file to recognize annotation-based configuration classes.&lt;/p&gt;
-
-&lt;hr&gt;
-
-&lt;h2 id=&quot;th&quot;&gt;Th&lt;/h2&gt;
-
-&lt;p&gt;what&lt;/p&gt;
-
-&lt;hr&gt;
-
-&lt;h2 id=&quot;the-basics2&quot;&gt;The Basics2&lt;/h2&gt;
-
-&lt;p&gt;whaat&lt;/p&gt;
-
-&lt;hr&gt;
-
-&lt;h2 id=&quot;the-basics3&quot;&gt;The Basics3&lt;/h2&gt;
-
-&lt;p&gt;whaat&lt;/p&gt;
-</description>
-        <pubDate>Mon, 21 Dec 2015 18:53:00 +0800</pubDate>
-        <link>http://reypader.github.io/2015/12/21/non-spring-boot.html</link>
-        <guid isPermaLink="true">http://reypader.github.io/2015/12/21/non-spring-boot.html</guid>
-        
-        <category>java</category>
-        
-        <category>spring</category>
         
         
       </item>
