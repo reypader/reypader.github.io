@@ -29,6 +29,9 @@ hr {
   margin-top: 50px;
   border-top: 5px solid #ddd; }
 
+.post-card {
+  margin: 10px; }
+
 /* Resume */
 .resume .profile {
   margin-left: auto;

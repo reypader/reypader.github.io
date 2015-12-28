@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>How to: Integrate Google Cloud Endpoints into the Spring Container</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/font-mfizz.css">
+
+  <link rel="canonical" href="http://reypader.github.io/2015/12/25/cloud-endpoints-spring.html">
+  <link rel="alternate" type="application/rss+xml" title="RMPader"
+        href="http://reypader.github.io/feed.xml">
+</head>
+
+
+<body>
+<nav class="navbar navbar-default navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+              aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">RMPader</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+        <li><a href="/">Home</a></li>
+        
+        
+        <li><a href="/me">My Resume</a></li>
+        
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+             aria-expanded="false">Categories <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <!--<li role="separator" class="divider"></li>-->
+            <li class="dropdown-header">Java</li>
+            <li><a href="/tag/java.html">Plain Java stuff</a></li>
+            <li><a href="/tag/spring.html">Spring Framework</a></li>
+            <li><a href="/tag/google-app-engine.html">Google App Engine</a></li>
+          </ul>
+        </li>
+      </ul>
+      <!--<ul class="nav navbar-nav navbar-right">-->
+      <!--<li><a href="../navbar/">Default</a></li>-->
+      <!--<li><a href="../navbar-static-top/">Static top</a></li>-->
+      <!--<li class="active"><a href="./">Fixed top <span class="sr-only">(current)</span></a></li>-->
+      <!--</ul>-->
+    </div>
+  </div>
+</nav>
+<div class="container content-wrapper">
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">How to: Integrate Google Cloud Endpoints into the Spring Container</h1>
+
+    <p class="post-meta">
+      <time datetime="2015-12-25T18:53:00+08:00" itemprop="datePublished">
+        
+        Published: Dec 25, 2015
+        
+      </time>
+      &nbsp;
+      &nbsp;
+      
+    </p>
+  </header>
+  <div class="post-content" itemprop="articleBody">
+    <div id="toc" class="well"> DERP <br> Don't mind me</div>
+
+    <p>Before we go through this article, I just need to make one thing clear. If you have the freedom to choose other REST frameworks such as Jersey or Spring REST, I urge you to use them instead.
+Google Cloud endpoints is okay, but it&#39;s not as flexible as those that I&#39;ve mentioned. I&#39;ll list down some of the limitations I&#39;ve encountered while using Google Cloud Endpoints:</p>
+
+<ul>
+<li><strong>You&#39;re pretty much stuck with its authentication mechanism.</strong> - Cloud Endpoints rely on Google&#39;s OAuth to authenticate users. There is a way to <a href="https://cloud.google.com/appengine/docs/java/endpoints/javadoc/com/google/api/server/spi/config/Authenticator">implement your own Authenticator</a> but its documentation is virtually non-existent. You can follow this <a href="http://stackoverflow.com/a/25390994">stackoverflow answer</a>, though.</li>
+<li><strong>The default security implementation is not meant for inter-server communication.</strong> - As with the previous item, unless you create your own Authenticator, the default authentication (Google Login) is meant for end-users.</li>
+<li><strong>Custom exception-to-error-response handling doesn&#39;t seem to exist.</strong> - I&#39;ve yet to see a similar feature to Spring&#39;s <code>@ExceptionHandler / @ResponseStatus</code> or Jersey&#39;s <code>WebApplicationException / ExceptionMapper</code>. You can extend Cloud Endpoint&#39;s existing exceptions but you&#39;re stuck with how it appears in JSON.</li>
+<li><strong>Does not support FileUpload.</strong> - This is understandable because you really can&#39;t write files in GAE. However, there are times when you wish to capture the file in memory and write it somewhere else (Google Cloud Storage). There is a way to do this using servlets but why not do it with a uniform syntax (i.e. the same way you handle other requests).</li>
+</ul>
+
+<p>Anyway, that&#39;s just what I was able to gather while using it. If any of the above points are no longer valid, please feel free to message me or write a comment.</p>
+
+<p>On to the article!</p>
+
+<hr>
+
+<h2 id="the-systemserviceservlet">The SystemServiceServlet</h2>
+
+<p>Google Cloud Endpoint instances are created by the <code>SystemServiceServlet</code> class from the App Engine SDK. It uses the <code>newInstance()</code> method to create instances. This is fine unless you&#39;re using IoC frameworks such as Spring.
+The problem with how <code>SystemServiceServlet</code> creates instances is that those instances are not &quot;tracked&quot; by Spring. The instances themselves need to exist in a <a href="http://docs.spring.io/spring-framework/docs/2.5.x/api/org/springframework/beans/factory/support/BeanDefinitionRegistry.html">Bean Registry</a>.
+You can do this by annotating the Endpoints with <code>@Component</code>. However, you&#39;ll soon find out that if the endpoint has dependencies to other beans, a <code>NullPointerException</code> will be thrown. This is because the instance that Cloud Endpoints used was not able to wire its dependencies.
+Recall that <code>SystemServiceServlet</code> uses <code>newInstance()</code> to create the endpoints as shown in the snippet below:</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SystemServiceServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">protected</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">createService</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">serviceClass</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">serviceClass</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InstantiationException</span> <span class="n">var3</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;Cannot instantiate service class: %s&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">serviceClass</span><span class="o">.</span><span class="na">getName</span><span class="o">()}),</span> <span class="n">var3</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IllegalAccessException</span> <span class="n">var4</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;Cannot access service class: %s&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">serviceClass</span><span class="o">.</span><span class="na">getName</span><span class="o">()}),</span> <span class="n">var4</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>This means that there will be two instances of an endpoint (Cloud Endpoints call them &quot;service&quot;). The instances created by Spring will never be used because <code>SystemServiceServlet</code> does not know about it.
+We need to be able to create the instances as beans in Spring and at the same time, make the <code>SystemServiceServlet</code> use them.</p>
+
+<hr>
+
+<h2 id="customizing-systemserviceservlet-createservice">Customizing SystemServiceServlet.createService()</h2>
+
+<p>To ensure that only one instance is created that is both recognized by Spring and used by the servlet, we need to override the implementation of the <code>createService()</code> method with the code below:</p>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">createService</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">serviceClass</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">ApplicationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="n">WebApplicationContextUtils</span>
+            <span class="o">.</span><span class="na">getRequiredWebApplicationContext</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getServletContext</span><span class="o">());</span>
+    <span class="n">AutowireCapableBeanFactory</span> <span class="n">beanFactory</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getAutowireCapableBeanFactory</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">beanFactory</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">serviceClass</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">BeansException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">beanName</span> <span class="o">=</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">uncapitalize</span><span class="o">(</span><span class="n">serviceClass</span><span class="o">.</span><span class="na">getSimpleName</span><span class="o">());</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&quot;No bean of type&#39;&quot;</span> <span class="o">+</span> <span class="n">serviceClass</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;&#39;.&quot;</span> <span class="o">+</span>
+                            <span class="s">&quot; Creating a new bean named &#39;&quot;</span> <span class="o">+</span> <span class="n">beanName</span> <span class="o">+</span> <span class="s">&quot;&#39;&quot;</span><span class="o">);</span>
+        <span class="n">T</span> <span class="n">bean</span> <span class="o">=</span> <span class="o">(</span><span class="n">T</span><span class="o">)</span> <span class="n">beanFactory</span><span class="o">.</span><span class="na">createBean</span><span class="o">(</span><span class="n">serviceClass</span><span class="o">,</span> <span class="n">AutowireCapableBeanFactory</span><span class="o">.</span><span class="na">AUTOWIRE_BY_TYPE</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+        <span class="k">return</span> <span class="o">(</span><span class="n">T</span><span class="o">)</span> <span class="n">beanFactory</span><span class="o">.</span><span class="na">initializeBean</span><span class="o">(</span><span class="n">bean</span><span class="o">,</span> <span class="n">beanName</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>Instead of returning the result of <code>serviceClass.newInstance()</code>, we now return an instance from Spring&#39;s bean registry or create one if it&#39;s not yet there.
+Afterwards, make sure to update your <code>web.xml</code> to use the new class as shown below:</p>
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;servlet&gt;</span>
+    <span class="nt">&lt;servlet-name&gt;</span>SystemServiceServlet<span class="nt">&lt;/servlet-name&gt;</span>
+    <span class="nt">&lt;servlet-class&gt;</span>
+        com.rmpader.cloudendpointsspring.compatibility.AutowireSupportSystemServiceServlet
+    <span class="nt">&lt;/servlet-class&gt;</span>
+    <span class="nt">&lt;init-param&gt;</span>
+        <span class="nt">&lt;param-name&gt;</span>services<span class="nt">&lt;/param-name&gt;</span>
+        <span class="nt">&lt;param-value&gt;</span>
+            com.rmpader.cloudendpointsspring.api.endpoint.HelloEndpoint
+        <span class="nt">&lt;/param-value&gt;</span>
+    <span class="nt">&lt;/init-param&gt;</span>
+<span class="nt">&lt;/servlet&gt;</span>
+</code></pre></div>
+<p>Voila! Your Cloud Endpoints are now officially Spring beans.</p>
+
+<hr>
+
+<p>If you wish to see a sample application, you can find it <a href="https://github.com/reypader/blogstuff/tree/master/cloud-endpoints-spring">here</a>.</p>
+
+<p><em>Cheers!</em><br>
+Rey</p>
+
+  </div>
+
+</article>
+</div>
+<hr/>
+<footer class="container">
+
+  <div class="row">
+    <div class="col-sm-4 col-xs-6">
+      RMPader<br/>
+      <a href="mailto:reynaldmpader@gmail.com">reynaldmpader@gmail.com</a>
+    </div>
+
+    <div class="col-sm-4 col-xs-6">
+      <ul class="social-media-list">
+        <li>
+          <a href="https://github.com/reypader"><i class="fa fa-github-square"></i> <span class="username">reypader</span></a>
+        </li>
+        <li>
+          <a href="https://ph.linkedin.com/in/rmpader"><i class="fa fa-linkedin-square"></i> <span class="username">rmpader</span></a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="col-sm-4 col-xs-12">
+      <p>This blog is by no means a source of "absolute truth". It's simply a guide to those who wants them. I hope that you find the contents of this site helpful and may the undying light of learning guide you.
+</p>
+    </div>
+  </div>
+
+
+</footer>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+        crossorigin="anonymous"></script>
+<script src="/js/toc.js"></script>
+<script type="text/javascript">
+  $(document).ready(function () {
+    $('#toc').toc({showSpeed: 0});
+  });
+</script>
+
+</body>
+
+</html>

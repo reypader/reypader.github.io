@@ -6,9 +6,109 @@
 </description>
     <link>http://reypader.github.io/</link>
     <atom:link href="http://reypader.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 28 Dec 2015 14:20:56 +0800</pubDate>
-    <lastBuildDate>Mon, 28 Dec 2015 14:20:56 +0800</lastBuildDate>
+    <pubDate>Mon, 28 Dec 2015 16:57:11 +0800</pubDate>
+    <lastBuildDate>Mon, 28 Dec 2015 16:57:11 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
+    
+      <item>
+        <title>How to: Integrate Google Cloud Endpoints into the Spring Container</title>
+        <description>&lt;p&gt;Before we go through this article, I just need to make one thing clear. If you have the freedom to choose other REST frameworks such as Jersey or Spring REST, I urge you to use them instead.
+Google Cloud endpoints is okay, but it&amp;#39;s not as flexible as those that I&amp;#39;ve mentioned. I&amp;#39;ll list down some of the limitations I&amp;#39;ve encountered while using Google Cloud Endpoints:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;You&amp;#39;re pretty much stuck with its authentication mechanism.&lt;/strong&gt; - Cloud Endpoints rely on Google&amp;#39;s OAuth to authenticate users. There is a way to &lt;a href=&quot;https://cloud.google.com/appengine/docs/java/endpoints/javadoc/com/google/api/server/spi/config/Authenticator&quot;&gt;implement your own Authenticator&lt;/a&gt; but its documentation is virtually non-existent. You can follow this &lt;a href=&quot;http://stackoverflow.com/a/25390994&quot;&gt;stackoverflow answer&lt;/a&gt;, though.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The default security implementation is not meant for inter-server communication.&lt;/strong&gt; - As with the previous item, unless you create your own Authenticator, the default authentication (Google Login) is meant for end-users.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Custom exception-to-error-response handling doesn&amp;#39;t seem to exist.&lt;/strong&gt; - I&amp;#39;ve yet to see a similar feature to Spring&amp;#39;s &lt;code&gt;@ExceptionHandler / @ResponseStatus&lt;/code&gt; or Jersey&amp;#39;s &lt;code&gt;WebApplicationException / ExceptionMapper&lt;/code&gt;. You can extend Cloud Endpoint&amp;#39;s existing exceptions but you&amp;#39;re stuck with how it appears in JSON.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Does not support FileUpload.&lt;/strong&gt; - This is understandable because you really can&amp;#39;t write files in GAE. However, there are times when you wish to capture the file in memory and write it somewhere else (Google Cloud Storage). There is a way to do this using servlets but why not do it with a uniform syntax (i.e. the same way you handle other requests).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Anyway, that&amp;#39;s just what I was able to gather while using it. If any of the above points are no longer valid, please feel free to message me or write a comment.&lt;/p&gt;
+
+&lt;p&gt;On to the article!&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;h2 id=&quot;the-systemserviceservlet&quot;&gt;The SystemServiceServlet&lt;/h2&gt;
+
+&lt;p&gt;Google Cloud Endpoint instances are created by the &lt;code&gt;SystemServiceServlet&lt;/code&gt; class from the App Engine SDK. It uses the &lt;code&gt;newInstance()&lt;/code&gt; method to create instances. This is fine unless you&amp;#39;re using IoC frameworks such as Spring.
+The problem with how &lt;code&gt;SystemServiceServlet&lt;/code&gt; creates instances is that those instances are not &amp;quot;tracked&amp;quot; by Spring. The instances themselves need to exist in a &lt;a href=&quot;http://docs.spring.io/spring-framework/docs/2.5.x/api/org/springframework/beans/factory/support/BeanDefinitionRegistry.html&quot;&gt;Bean Registry&lt;/a&gt;.
+You can do this by annotating the Endpoints with &lt;code&gt;@Component&lt;/code&gt;. However, you&amp;#39;ll soon find out that if the endpoint has dependencies to other beans, a &lt;code&gt;NullPointerException&lt;/code&gt; will be thrown. This is because the instance that Cloud Endpoints used was not able to wire its dependencies.
+Recall that &lt;code&gt;SystemServiceServlet&lt;/code&gt; uses &lt;code&gt;newInstance()&lt;/code&gt; to create the endpoints as shown in the snippet below:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SystemServiceServlet&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HttpServlet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;serviceClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;serviceClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;newInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;InstantiationException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;var3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;RuntimeException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Cannot instantiate service class: %s&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;serviceClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()}),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;var3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;IllegalAccessException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;var4&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;RuntimeException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Cannot access service class: %s&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;serviceClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()}),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;var4&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This means that there will be two instances of an endpoint (Cloud Endpoints call them &amp;quot;service&amp;quot;). The instances created by Spring will never be used because &lt;code&gt;SystemServiceServlet&lt;/code&gt; does not know about it.
+We need to be able to create the instances as beans in Spring and at the same time, make the &lt;code&gt;SystemServiceServlet&lt;/code&gt; use them.&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;h2 id=&quot;customizing-systemserviceservlet-createservice&quot;&gt;Customizing SystemServiceServlet.createService()&lt;/h2&gt;
+
+&lt;p&gt;To ensure that only one instance is created that is both recognized by Spring and used by the servlet, we need to override the implementation of the &lt;code&gt;createService()&lt;/code&gt; method with the code below:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;createService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;serviceClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ApplicationContext&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;WebApplicationContextUtils&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getRequiredWebApplicationContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getServletContext&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;AutowireCapableBeanFactory&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beanFactory&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getAutowireCapableBeanFactory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beanFactory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getBean&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;serviceClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;BeansException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beanName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;StringUtils&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;uncapitalize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;serviceClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getSimpleName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;LOGGER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;info&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;No bean of type&amp;#39;&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;serviceClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;#39;.&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+                            &lt;span class=&quot;s&quot;&gt;&amp;quot; Creating a new bean named &amp;#39;&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beanName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;#39;&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bean&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beanFactory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;createBean&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;serviceClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AutowireCapableBeanFactory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;AUTOWIRE_BY_TYPE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beanFactory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;initializeBean&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bean&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beanName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Instead of returning the result of &lt;code&gt;serviceClass.newInstance()&lt;/code&gt;, we now return an instance from Spring&amp;#39;s bean registry or create one if it&amp;#39;s not yet there.
+Afterwards, make sure to update your &lt;code&gt;web.xml&lt;/code&gt; to use the new class as shown below:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;servlet&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;servlet-name&amp;gt;&lt;/span&gt;SystemServiceServlet&lt;span class=&quot;nt&quot;&gt;&amp;lt;/servlet-name&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;servlet-class&amp;gt;&lt;/span&gt;
+        com.rmpader.cloudendpointsspring.compatibility.AutowireSupportSystemServiceServlet
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/servlet-class&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;init-param&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;param-name&amp;gt;&lt;/span&gt;services&lt;span class=&quot;nt&quot;&gt;&amp;lt;/param-name&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;param-value&amp;gt;&lt;/span&gt;
+            com.rmpader.cloudendpointsspring.api.endpoint.HelloEndpoint
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/param-value&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/init-param&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/servlet&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Voila! Your Cloud Endpoints are now officially Spring beans.&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;p&gt;If you wish to see a sample application, you can find it &lt;a href=&quot;https://github.com/reypader/blogstuff/tree/master/cloud-endpoints-spring&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Cheers!&lt;/em&gt;&lt;br&gt;
+Rey&lt;/p&gt;
+</description>
+        <pubDate>Fri, 25 Dec 2015 18:53:00 +0800</pubDate>
+        <link>http://reypader.github.io/2015/12/25/cloud-endpoints-spring.html</link>
+        <guid isPermaLink="true">http://reypader.github.io/2015/12/25/cloud-endpoints-spring.html</guid>
+        
+        <category>java</category>
+        
+        <category>spring</category>
+        
+        <category>google-app-engine</category>
+        
+        <category>google-cloud-endpoints</category>
+        
+        
+      </item>
     
       <item>
         <title>How to: Declare more complex request mappings in Spring</title>
@@ -22,7 +122,7 @@
     &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;You can find the source code &lt;a href=&quot;&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;You can find the source code &lt;a href=&quot;https://github.com/reypader/blogstuff/tree/master/spring-request-mapping&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;br&gt;
 Here we go...&lt;/p&gt;
