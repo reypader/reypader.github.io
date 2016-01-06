@@ -6,8 +6,8 @@
 </description>
     <link>http://reypader.github.io/</link>
     <atom:link href="http://reypader.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 06 Jan 2016 18:28:35 +0800</pubDate>
-    <lastBuildDate>Wed, 06 Jan 2016 18:28:35 +0800</lastBuildDate>
+    <pubDate>Wed, 06 Jan 2016 19:44:51 +0800</pubDate>
+    <lastBuildDate>Wed, 06 Jan 2016 19:44:51 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -77,7 +77,7 @@ The latter would be what you would be looking for if you wish to dynamically cha
 there will be two suggested courses - Theoretical Physics and Computer Science.&lt;/p&gt;
 
 &lt;p&gt;For simplicity, the only aspect that will change for each section is how the &lt;code&gt;KieContainer&lt;/code&gt; is configured. The assumption is that you have an idea on how to use
-the &lt;code&gt;KieContainer&lt;/code&gt; to fire rules. You can find the source code &lt;a href=&quot;https://github.com/reypader/blogstuff/tree/master/spring-drools&quot;&gt;here&lt;/a&gt;.
+the &lt;code&gt;KieContainer&lt;/code&gt; to fire rules. If not, the Drools documentation has a &lt;a href=&quot;http://docs.jboss.org/drools/release/6.3.0.Final/drools-docs/html_single/index.html#KIEExamplesSection&quot;&gt;section&lt;/a&gt; to show you how to do just that. You can find the source code &lt;a href=&quot;https://github.com/reypader/blogstuff/tree/master/spring-drools&quot;&gt;here&lt;/a&gt;.
 You will also find a guide there on how to setup &lt;a href=&quot;https://docs.jboss.org/drools/release/latest/drools-docs/html/pt05.html&quot;&gt;Drools Workbench&lt;/a&gt; and &lt;a href=&quot;http://wildfly.org/&quot;&gt;Wildfly&lt;/a&gt; (an alternative to Tomcat which is more compatible with Drools Workbench) on your machine.&lt;/p&gt;
 
 &lt;hr&gt;
