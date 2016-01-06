@@ -224,8 +224,6 @@ stopping the server? You should be...</p>
 <p>Fetching rules remotely is actually the most common use-case for Drools in my opinion. Strangely enough, I&#39;ve yet to find a tutorial on how to do this. Hopefully, this section
 does a decent enough job to show you how.</p>
 
-<hr>
-
 <h3 id="drools-workbench">Drools Workbench</h3>
 
 <p><img class="img-rounded img-responsive center-block" src="https://docs.jboss.org/drools/release/6.2.0.Final/drools-docs/html_single/images/Workbench/ReleaseNotes/kie-drools-wb.png">
@@ -238,16 +236,12 @@ the rules themselves are also Maven Artifacts. Aside from serving as a repositor
 <p>The README of the sample source code contains guides on how to <a href="https://github.com/reypader/blogstuff/tree/master/spring-drools#setup-a-drools-project">author rules</a> as well as setting up your <a href="https://github.com/reypader/blogstuff/tree/master/spring-drools#setup-wildfly">Drools Workbench and Wildfly</a>.
 Wildfly was used over Tomcat due to compatibility issues.</p>
 
-<hr>
-
 <h3 id="the-facts-artifact">The Facts Artifact</h3>
 
 <p>Earlier, I&#39;ve mentioned that you should place your facts in a separate maven artifact. Also, if you&#39;ve gone through the guide on how to author rules, you&#39;ll also see that the first thing needed
 is to have a facts artifact ready to be imported. The reason for this is that since your application and the rules project are two different projects that use the same fact objects, there needs to be a uniform
 definition of the classes being used. By now you&#39;ve probably realized that the same is true with API artifacts of certain libraries (e.g. <a href="http://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api">log4j-api</a>, <a href="http://mvnrepository.com/artifact/javax.persistence/persistence-api">JPA</a>).
 Hence, separating the fact objects artifact becomes mandatory when doing remote rules.</p>
-
-<hr>
 
 <h3 id="retrieving-a-rule-from-drools-workbench">Retrieving a rule from Drools Workbench</h3>
 
