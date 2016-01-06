@@ -241,7 +241,7 @@ Wildfly was used over Tomcat due to compatibility issues.</p>
 <p>Earlier, I&#39;ve mentioned that you should place your facts in a separate maven artifact. Also, if you&#39;ve gone through the guide on how to author rules, you&#39;ll also see that the first thing needed
 is to have a facts artifact ready to be imported. The reason for this is that since your application and the rules project are two different projects that use the same fact objects, there needs to be a uniform
 definition of the classes being used. By now you&#39;ve probably realized that the same is true with API artifacts of certain libraries (e.g. <a href="http://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api">log4j-api</a>, <a href="http://mvnrepository.com/artifact/javax.persistence/persistence-api">JPA</a>).
-Hence, separating the fact objects artifact becomes mandatory when doing remote rules.</p>
+Hence, separating the fact objects artifact becomes mandatory when doing remote rules. You could see how it&#39;s done in the <a href="https://github.com/reypader/blogstuff/tree/master/spring-drools/drools-demo-facts">sample code repository</a> (drools-demo-facts)</p>
 
 <h3 id="retrieving-a-rule-from-drools-workbench">Retrieving a rule from Drools Workbench</h3>
 

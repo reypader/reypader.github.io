@@ -6,8 +6,8 @@
 </description>
     <link>http://reypader.github.io/</link>
     <atom:link href="http://reypader.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 06 Jan 2016 18:19:45 +0800</pubDate>
-    <lastBuildDate>Wed, 06 Jan 2016 18:19:45 +0800</lastBuildDate>
+    <pubDate>Wed, 06 Jan 2016 18:28:35 +0800</pubDate>
+    <lastBuildDate>Wed, 06 Jan 2016 18:28:35 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -173,7 +173,7 @@ Wildfly was used over Tomcat due to compatibility issues.&lt;/p&gt;
 &lt;p&gt;Earlier, I&amp;#39;ve mentioned that you should place your facts in a separate maven artifact. Also, if you&amp;#39;ve gone through the guide on how to author rules, you&amp;#39;ll also see that the first thing needed
 is to have a facts artifact ready to be imported. The reason for this is that since your application and the rules project are two different projects that use the same fact objects, there needs to be a uniform
 definition of the classes being used. By now you&amp;#39;ve probably realized that the same is true with API artifacts of certain libraries (e.g. &lt;a href=&quot;http://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api&quot;&gt;log4j-api&lt;/a&gt;, &lt;a href=&quot;http://mvnrepository.com/artifact/javax.persistence/persistence-api&quot;&gt;JPA&lt;/a&gt;).
-Hence, separating the fact objects artifact becomes mandatory when doing remote rules.&lt;/p&gt;
+Hence, separating the fact objects artifact becomes mandatory when doing remote rules. You could see how it&amp;#39;s done in the &lt;a href=&quot;https://github.com/reypader/blogstuff/tree/master/spring-drools/drools-demo-facts&quot;&gt;sample code repository&lt;/a&gt; (drools-demo-facts)&lt;/p&gt;
 
 &lt;h3 id=&quot;retrieving-a-rule-from-drools-workbench&quot;&gt;Retrieving a rule from Drools Workbench&lt;/h3&gt;
 
