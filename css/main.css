@@ -24,13 +24,16 @@ a {
   font-size: 16px; }
   .content-wrapper h1, .content-wrapper h2, .content-wrapper h3, .content-wrapper h4, .content-wrapper h5, .content-wrapper h6 {
     font-weight: bolder; }
+  .content-wrapper td, .content-wrapper thead th {
+    text-align: center; }
 
 hr {
   margin-top: 50px;
   border-top: 5px solid #ddd; }
 
 .post-card {
-  margin: 10px; }
+  padding-left: 15px;
+  padding-right: 15px; }
 
 /* Resume */
 .resume .profile {
