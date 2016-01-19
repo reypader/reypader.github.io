@@ -6,9 +6,87 @@
 </description>
     <link>http://reypader.github.io/</link>
     <atom:link href="http://reypader.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 06 Jan 2016 19:44:51 +0800</pubDate>
-    <lastBuildDate>Wed, 06 Jan 2016 19:44:51 +0800</lastBuildDate>
+    <pubDate>Tue, 19 Jan 2016 18:44:09 +0800</pubDate>
+    <lastBuildDate>Tue, 19 Jan 2016 18:44:09 +0800</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
+    
+      <item>
+        <title>How to: Secure your RESTful Application for Google App Engine</title>
+        <description>&lt;h2 id=&quot;the-configuration&quot;&gt;The Configuration&lt;/h2&gt;
+
+&lt;h3 id=&quot;the-explanation&quot;&gt;The Explanation&lt;/h3&gt;
+</description>
+        <pubDate>Wed, 27 Jan 2016 18:53:00 +0800</pubDate>
+        <link>http://reypader.github.io/2016/01/27/spring-security-rest-gae.html</link>
+        <guid isPermaLink="true">http://reypader.github.io/2016/01/27/spring-security-rest-gae.html</guid>
+        
+        <category>java</category>
+        
+        <category>spring</category>
+        
+        <category>spring-rest</category>
+        
+        <category>google-app-engine</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>How to: Secure your RESTful Application - Part 3</title>
+        <description>&lt;h2 id=&quot;the-configuration&quot;&gt;The Configuration&lt;/h2&gt;
+
+&lt;h3 id=&quot;the-explanation&quot;&gt;The Explanation&lt;/h3&gt;
+</description>
+        <pubDate>Mon, 25 Jan 2016 18:53:00 +0800</pubDate>
+        <link>http://reypader.github.io/2016/01/25/spring-security-rest-3.html</link>
+        <guid isPermaLink="true">http://reypader.github.io/2016/01/25/spring-security-rest-3.html</guid>
+        
+        <category>java</category>
+        
+        <category>spring</category>
+        
+        <category>spring-rest</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>How to: Secure your RESTful Application - Part 2</title>
+        <description>&lt;h2 id=&quot;the-configuration&quot;&gt;The Configuration&lt;/h2&gt;
+
+&lt;h3 id=&quot;the-explanation&quot;&gt;The Explanation&lt;/h3&gt;
+</description>
+        <pubDate>Fri, 22 Jan 2016 18:53:00 +0800</pubDate>
+        <link>http://reypader.github.io/2016/01/22/spring-security-rest-2.html</link>
+        <guid isPermaLink="true">http://reypader.github.io/2016/01/22/spring-security-rest-2.html</guid>
+        
+        <category>java</category>
+        
+        <category>spring</category>
+        
+        <category>spring-rest</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>How to: Secure your RESTful Application - Part 1</title>
+        <description>&lt;h2 id=&quot;setup-basic-authentication&quot;&gt;Setup Basic Authentication&lt;/h2&gt;
+
+&lt;h2 id=&quot;use-a-custom-quot-user-class-quot&quot;&gt;Use a custom &amp;quot;User Class&amp;quot;&lt;/h2&gt;
+</description>
+        <pubDate>Wed, 20 Jan 2016 18:53:00 +0800</pubDate>
+        <link>http://reypader.github.io/2016/01/20/spring-security-rest-1.html</link>
+        <guid isPermaLink="true">http://reypader.github.io/2016/01/20/spring-security-rest-1.html</guid>
+        
+        <category>java</category>
+        
+        <category>spring</category>
+        
+        <category>spring-rest</category>
+        
+        
+      </item>
     
       <item>
         <title>How to: Integrate Drools and Spring Framework</title>
